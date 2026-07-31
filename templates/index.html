@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CardioPredict AI — Heart Failure Risk Prediction</title>
+  <meta name="description" content="AI-powered heart failure risk prediction using patient clinical parameters. Educational tool built with Flask and scikit-learn.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <!-- ======================================================================
+       NAVBAR
+       ====================================================================== -->
+  <nav class="navbar">
+    <div class="navbar__inner">
+      <div class="navbar__brand">
+        <span class="navbar__logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </span>
+        CardioPredict AI
+      </div>
+      <div class="navbar__links">
+        <a href="#about">About</a>
+        <a href="#model-info">Model</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ======================================================================
+       HERO
+       ====================================================================== -->
+  <header class="hero">
+    <div class="overlay"></div>
+    <div class="container hero__inner">
+      <div class="hero__icon fade-in">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+      </div>
+      <h1 class="title-main fade-in">CardioPredict AI</h1>
+      <p class="title-subtitle fade-in">
+        Predict the likelihood of heart failure using Machine Learning based on patient clinical parameters.
+      </p>
+      <div class="title-disclaimer fade-in">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        For educational purposes only — not a substitute for medical advice
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================================
+       FORM
+       ====================================================================== -->
+  <main class="container section">
+
+    {% if error %}
+    <div class="alert alert--error slide-up" role="alert">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>{{ error }}</span>
+    </div>
+    {% endif %}
+
+    <form action="{{ url_for('predict') }}" method="POST" id="predict-form" novalidate>
+
+      <div class="grid" style="align-items: start; margin-bottom: var(--sp-5);">
+
+        <!-- ================= CARD 1 — PATIENT INFORMATION ================= -->
+        <section class="card slide-up">
+          <div class="section-header">
+            <span class="section-header__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </span>
+            <div>
+              <div class="section-header__title">Patient Information</div>
+              <div class="section-header__desc">Basic demographic and lifestyle details</div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+
+            <div class="input-group">
+              <label for="age">Age <span class="unit">(years)</span></label>
+              <input type="number" id="age" name="age" placeholder="e.g. 60" min="18" max="110" step="1" required>
+              <span class="field-error" data-error-for="age"></span>
+            </div>
+
+            <div class="input-group">
+              <label>Gender</label>
+              <div class="radio-group">
+                <label class="radio-pill">
+                  <input type="radio" name="sex" value="1" required>
+                  <span>Male</span>
+                </label>
+                <label class="radio-pill">
+                  <input type="radio" name="sex" value="0">
+                  <span>Female</span>
+                </label>
+              </div>
+              <span class="field-error" data-error-for="sex"></span>
+            </div>
+
+            <div class="input-group">
+              <label>Anaemia</label>
+              <div class="radio-group">
+                <label class="radio-pill">
+                  <input type="radio" name="anaemia" value="1" required>
+                  <span>Yes</span>
+                </label>
+                <label class="radio-pill">
+                  <input type="radio" name="anaemia" value="0">
+                  <span>No</span>
+                </label>
+              </div>
+              <span class="field-error" data-error-for="anaemia"></span>
+            </div>
+
+            <div class="input-group">
+              <label>Diabetes</label>
+              <div class="radio-group">
+                <label class="radio-pill">
+                  <input type="radio" name="diabetes" value="1" required>
+                  <span>Yes</span>
+                </label>
+                <label class="radio-pill">
+                  <input type="radio" name="diabetes" value="0">
+                  <span>No</span>
+                </label>
+              </div>
+              <span class="field-error" data-error-for="diabetes"></span>
+            </div>
+
+            <div class="input-group">
+              <label>Smoking</label>
+              <div class="radio-group">
+                <label class="radio-pill">
+                  <input type="radio" name="smoking" value="1" required>
+                  <span>Yes</span>
+                </label>
+                <label class="radio-pill">
+                  <input type="radio" name="smoking" value="0">
+                  <span>No</span>
+                </label>
+              </div>
+              <span class="field-error" data-error-for="smoking"></span>
+            </div>
+
+            <div class="input-group">
+              <label>High Blood Pressure</label>
+              <div class="radio-group">
+                <label class="radio-pill">
+                  <input type="radio" name="high_blood_pressure" value="1" required>
+                  <span>Yes</span>
+                </label>
+                <label class="radio-pill">
+                  <input type="radio" name="high_blood_pressure" value="0">
+                  <span>No</span>
+                </label>
+              </div>
+              <span class="field-error" data-error-for="high_blood_pressure"></span>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ================= CARD 2 — CLINICAL MEASUREMENTS ================= -->
+        <section class="card slide-up delay-1">
+          <div class="section-header">
+            <span class="section-header__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+            </span>
+            <div>
+              <div class="section-header__title">Clinical Measurements</div>
+              <div class="section-header__desc">Lab values from the most recent workup</div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+
+            <div class="input-group">
+              <label for="creatinine_phosphokinase">CPK Enzyme <span class="unit">(mcg/L)</span></label>
+              <input type="number" id="creatinine_phosphokinase" name="creatinine_phosphokinase" placeholder="e.g. 250" min="10" max="8000" step="1" required>
+              <span class="hint">Typical range: 10–8000 mcg/L</span>
+              <span class="field-error" data-error-for="creatinine_phosphokinase"></span>
+            </div>
+
+            <div class="input-group">
+              <label for="ejection_fraction">Ejection Fraction <span class="unit">(%)</span></label>
+              <input type="number" id="ejection_fraction" name="ejection_fraction" placeholder="e.g. 38" min="10" max="80" step="1" required>
+              <span class="hint">Percentage of blood leaving the heart per contraction</span>
+              <span class="field-error" data-error-for="ejection_fraction"></span>
+            </div>
+
+            <div class="input-group">
+              <label for="platelets">Platelets <span class="unit">(kiloplatelets/mL)</span></label>
+              <input type="number" id="platelets" name="platelets" placeholder="e.g. 263000" min="25000" max="900000" step="1000" required>
+              <span class="field-error" data-error-for="platelets"></span>
+            </div>
+
+            <div class="input-group">
+              <label for="serum_creatinine">Serum Creatinine <span class="unit">(mg/dL)</span></label>
+              <input type="number" id="serum_creatinine" name="serum_creatinine" placeholder="e.g. 1.1" min="0.1" max="10" step="0.1" required>
+              <span class="field-error" data-error-for="serum_creatinine"></span>
+            </div>
+
+            <div class="input-group">
+              <label for="serum_sodium">Serum Sodium <span class="unit">(mEq/L)</span></label>
+              <input type="number" id="serum_sodium" name="serum_sodium" placeholder="e.g. 137" min="100" max="150" step="1" required>
+              <span class="field-error" data-error-for="serum_sodium"></span>
+            </div>
+
+            <div class="input-group">
+              <label for="time">Follow-up Period <span class="unit">(days)</span></label>
+              <input type="number" id="time" name="time" placeholder="e.g. 120" min="0" max="300" step="1" required>
+              <span class="hint">Days since diagnosis this record covers</span>
+              <span class="field-error" data-error-for="time"></span>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+
+      <div class="card slide-up delay-2" style="text-align: center;">
+        <button type="submit" class="btn btn-primary" style="max-width: 420px; margin: 0 auto;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+          Predict Risk
+        </button>
+        <p class="text-sm text-muted" style="margin-top: var(--sp-3);">
+          Your data is processed locally for this prediction and is not stored.
+        </p>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- ======================================================================
+       ABOUT
+       ====================================================================== -->
+  <section class="container section" id="about" style="padding-top: 0;">
+    <div class="card">
+      <div class="section-header">
+        <span class="section-header__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </span>
+        <div>
+          <div class="section-header__title">About This Project</div>
+          <div class="section-header__desc">What CardioPredict AI does and how it was built</div>
+        </div>
+      </div>
+      <p style="margin-bottom: var(--sp-3);">
+        I built this to practice taking a trained model and wrapping it in something people could
+        actually use, instead of leaving it in a notebook. It takes a patient's basic details and
+        recent blood work and runs them through a Random Forest model trained on the public
+        Heart Failure Clinical Records dataset (299 patient records, so — small dataset, take the
+        output with a grain of salt).
+      </p>
+      <p>
+        This is a student project. Please don't use it for anything more serious than curiosity —
+        it's not a diagnostic tool, and it hasn't been validated for clinical use.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       MODEL INFORMATION
+       ====================================================================== -->
+  <section class="container section" id="model-info" style="padding-top: 0;">
+    <div class="card">
+      <div class="section-header">
+        <span class="section-header__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+          </svg>
+        </span>
+        <div>
+          <div class="section-header__title">Model Information</div>
+          <div class="section-header__desc">Details about the prediction engine behind this tool</div>
+        </div>
+      </div>
+      <div class="grid grid--three">
+        <div class="stat-card">
+          <div class="stat-card__label">Algorithm</div>
+          <div class="stat-card__value">{{ model_name }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Dataset</div>
+          <div class="stat-card__value">Heart Failure Clinical Records</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Clinical Features</div>
+          <div class="stat-card__value">{{ feature_count }} Features</div>
+        </div>
+        {% if sample_count %}
+        <div class="stat-card">
+          <div class="stat-card__label">Training Samples</div>
+          <div class="stat-card__value">{{ sample_count }} Records</div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       FOOTER
+       ====================================================================== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">CardioPredict AI</div>
+      <p class="footer__disclaimer">
+        Built as a student project to explore ML deployment — not a medical device, and not a
+        substitute for talking to an actual doctor. If anything here looks off, it probably is;
+        use it to learn, not to make real health decisions.
+      </p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

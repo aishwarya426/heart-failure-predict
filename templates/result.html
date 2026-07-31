@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prediction Result — CardioPredict AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <!-- ======================================================================
+       NAVBAR
+       ====================================================================== -->
+  <nav class="navbar">
+    <div class="navbar__inner">
+      <div class="navbar__brand">
+        <span class="navbar__logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </span>
+        CardioPredict AI
+      </div>
+      <div class="navbar__links">
+        <a href="{{ url_for('home') }}">New Prediction</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero" style="padding: var(--sp-6) 0;">
+    <div class="overlay"></div>
+    <div class="container hero__inner">
+      <p class="title-subtitle fade-in" style="margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.8rem; font-weight: 600; color: var(--gray-400);">
+        Prediction Result
+      </p>
+    </div>
+  </header>
+
+  <main class="container section" style="padding-top: var(--sp-5); max-width: 780px;">
+
+    <!-- ==================================================================
+         RESULT CARD
+         ================================================================== -->
+    {% if prediction == 1 %}
+    <div class="card result-card result-card--high slide-up">
+      <span class="badge badge-high">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        High Risk
+      </span>
+      <h1 class="result-card__heading">Elevated Risk of Heart Failure</h1>
+      <p class="result-card__explanation">
+        The model predicts a higher probability of heart failure based on the provided clinical information.
+      </p>
+      {% if confidence %}
+      <div class="confidence-meter">
+        <div class="confidence-meter__label">
+          <span>Model confidence</span>
+          <span>{{ confidence }}%</span>
+        </div>
+        <div class="confidence-meter__track">
+          <div class="confidence-meter__fill" style="width: {{ confidence }}%;"></div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    {% else %}
+    <div class="card result-card result-card--low slide-up">
+      <span class="badge badge-low">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        Low Risk
+      </span>
+      <h1 class="result-card__heading">Lower Risk of Heart Failure</h1>
+      <p class="result-card__explanation">
+        The model predicts a lower probability of heart failure based on the provided clinical information.
+      </p>
+      {% if confidence %}
+      <div class="confidence-meter">
+        <div class="confidence-meter__label">
+          <span>Model confidence</span>
+          <span>{{ confidence }}%</span>
+        </div>
+        <div class="confidence-meter__track">
+          <div class="confidence-meter__fill" style="width: {{ confidence }}%;"></div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- ==================================================================
+         RECOMMENDATIONS
+         ================================================================== -->
+    <section class="card slide-up delay-1" style="margin-top: var(--sp-5);">
+      <div class="section-header">
+        <span class="section-header__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"></path>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+        </span>
+        <div>
+          <div class="section-header__title">Recommendations</div>
+          <div class="section-header__desc">General guidance based on this result</div>
+        </div>
+      </div>
+
+      {% if prediction == 1 %}
+      <div class="recommend-list">
+        <div class="recommend-item">
+          <span class="recommend-item__icon recommend-item__icon--high">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </span>
+          <span>Consult a cardiologist</span>
+        </div>
+        <div class="recommend-item">
+          <span class="recommend-item__icon recommend-item__icon--high">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </span>
+          <span>Monitor blood pressure regularly</span>
+        </div>
+        <div class="recommend-item">
+          <span class="recommend-item__icon recommend-item__icon--high">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </span>
+          <span>Exercise regularly, within medical guidance</span>
+        </div>
+        <div class="recommend-item">
+          <span class="recommend-item__icon recommend-item__icon--high">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </span>
+          <span>Reduce sodium intake</span>
+        </div>
+        <div class="recommend-item" style="grid-column: span 2;">
+          <span class="recommend-item__icon recommend-item__icon--high">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </span>
+          <span>Follow prescribed medication as directed</span>
+        </div>
+      </div>
+
+      {% else %}
+      <div class="recommend-list">
+        <div class="recommend-item">
+          <span class="recommend-item__icon recommend-item__icon--low">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </span>
+          <span>Maintain a healthy lifestyle</span>
+        </div>
+        <div class="recommend-item">
+          <span class="recommend-item__icon recommend-item__icon--low">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </span>
+          <span>Continue regular exercise</span>
+        </div>
+        <div class="recommend-item">
+          <span class="recommend-item__icon recommend-item__icon--low">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </span>
+          <span>Follow a balanced diet</span>
+        </div>
+        <div class="recommend-item">
+          <span class="recommend-item__icon recommend-item__icon--low">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </span>
+          <span>Schedule routine health checkups</span>
+        </div>
+      </div>
+      {% endif %}
+    </section>
+
+    <!-- ==================================================================
+         SUBMITTED VALUES (quick reference)
+         ================================================================== -->
+    {% if patient %}
+    <section class="card slide-up delay-2" style="margin-top: var(--sp-5);">
+      <div class="section-header">
+        <span class="section-header__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+        </span>
+        <div>
+          <div class="section-header__title">Submitted Values</div>
+          <div class="section-header__desc">Clinical parameters used for this prediction</div>
+        </div>
+      </div>
+      <div class="grid grid--three">
+        <div class="stat-card"><div class="stat-card__label">Age</div><div class="stat-card__value">{{ patient.age }}</div></div>
+        <div class="stat-card"><div class="stat-card__label">Ejection Fraction</div><div class="stat-card__value">{{ patient.ejection_fraction }}%</div></div>
+        <div class="stat-card"><div class="stat-card__label">Serum Creatinine</div><div class="stat-card__value">{{ patient.serum_creatinine }} mg/dL</div></div>
+        <div class="stat-card"><div class="stat-card__label">Serum Sodium</div><div class="stat-card__value">{{ patient.serum_sodium }} mEq/L</div></div>
+        <div class="stat-card"><div class="stat-card__label">Platelets</div><div class="stat-card__value">{{ patient.platelets }}</div></div>
+        <div class="stat-card"><div class="stat-card__label">CPK Enzyme</div><div class="stat-card__value">{{ patient.creatinine_phosphokinase }} mcg/L</div></div>
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- ==================================================================
+         MODEL INFORMATION
+         ================================================================== -->
+    <section class="card slide-up delay-3" style="margin-top: var(--sp-5);">
+      <div class="section-header">
+        <span class="section-header__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+          </svg>
+        </span>
+        <div>
+          <div class="section-header__title">Model Information</div>
+          <div class="section-header__desc">How this prediction was generated</div>
+        </div>
+      </div>
+      <div class="grid grid--three">
+        <div class="stat-card">
+          <div class="stat-card__label">Algorithm</div>
+          <div class="stat-card__value">{{ model_name }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Dataset</div>
+          <div class="stat-card__value">Heart Failure Clinical Records</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Clinical Features</div>
+          <div class="stat-card__value">{{ feature_count }} Features</div>
+        </div>
+      </div>
+      <p class="text-sm text-muted" style="margin-top: var(--sp-4);">
+        This result was generated by a trained Machine Learning model and is intended for educational
+        purposes only. It is not a medical diagnosis.
+      </p>
+    </section>
+
+    <!-- ==================================================================
+         ACTIONS
+         ================================================================== -->
+    <div class="flex flex-wrap slide-up delay-3" style="gap: var(--sp-3); margin-top: var(--sp-6); justify-content: center;">
+      <a href="{{ url_for('home') }}" class="btn btn-primary" style="width: auto; flex: 1; min-width: 220px; text-align: center;">
+        Predict Another Patient
+      </a>
+      <a href="{{ url_for('home') }}#about" class="btn btn-outline" style="flex: 1; min-width: 180px; text-align: center;">
+        Back to Home
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ======================================================================
+       FOOTER
+       ====================================================================== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">CardioPredict AI</div>
+      <p class="footer__disclaimer">
+        Educational project only — this prediction comes from a model trained on ~300 records,
+        which is nowhere near enough to make real clinical calls. Please see an actual doctor
+        for anything health-related.
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
